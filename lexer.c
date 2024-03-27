@@ -101,6 +101,8 @@ static int number(void) {
     char** end = &token+j;
     errno = 0;
 
+    strtoll(token, end, 10);
+
     if (errno == ERANGE) {
         error("Could not convert '%s' to a number.");
     }
@@ -109,15 +111,28 @@ static int number(void) {
 }
 
 static int sqString() {
-    /*
-     * Starting at 3 to account for opening and closing quotes
-     * and two \0's, one for the string itself, the other for
-     * the end of our token.
-     */
-    size_t token_size = 3;
-    if (++*raw == '\''){
-        
+    char* head = raw;
+
+    ++raw;
+    while(*raw != '\'') {
+        ++raw;
     }
+
+    size_t str_len = raw - head;
+
+    if((token = malloc(str_len + 2)) == NULL)
+        error("malloc failed.");
+    
+    size_t i = 0, j = 0;
+
+    for (; i < str_len + 1; i++) {
+        token[j++] = *head;
+        ++head;
+    }
+
+    token[j] = '\0';
+
+    return TOK_STRING;
 }
 
 static int dqString() {
@@ -194,7 +209,9 @@ void tokenize(void) {
         ++raw;
         (void) fprintf(stdout, "%lu|%d\t", line, type);
         switch (type) {
-
+            case TOK_STRING:
+                (void) fprintf(stdout, "%s", token);
+                break;
             case TOK_IDENT:
             case TOK_NUMBER:
             case TOK_CONST:

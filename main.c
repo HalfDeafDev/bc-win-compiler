@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     readin(argv[1]);
     startp = raw;
 
-    parse();
+    tokenize();
 
     free(startp);
 
