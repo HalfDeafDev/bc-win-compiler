@@ -13,6 +13,8 @@ Beyond that, I've made changes of my own, opting for a multi-file solution inste
 
 I've also seemed to run into an issue following the blog post and being able to tokenize any of the provided `.pl0` files from his source that contain the `'` character.
 
-So currently that is what we're doing, implementing string tokens.
+This is probably fine for most people, you can just add the `'` character in to be printed raw or as part of the identity group assuming you're okay with handling the `'`'s elsewhere.
+
+I chose to acknowledge them as their own token, `TOK_STRING`. This modified the grammar slightly, but I don't believe it disqualifies it from validating PL/0 code.
 
 This project will be a mess for a while, at least until I am done with the series, but I should be coming through to clean it up before moving onto building this project again, without the articles, and attempting either a different language, a language of my own, or building out PL/0.
