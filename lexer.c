@@ -202,7 +202,6 @@ again:
  * Parser
  */
 
-static int type;
 
 void tokenize(void) {
     while ((type = lex()) != 0) {

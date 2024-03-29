@@ -12,5 +12,7 @@
 extern char *raw;
 extern size_t line;
    
+extern int type;
+
 void error(const char *, ...);
 void readin(char *);
