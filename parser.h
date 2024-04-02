@@ -1,4 +1,4 @@
 #include "globals.h"
+#include "lexer.h"
 
-void next();
-void expect();
+void parse(void);

@@ -3,7 +3,6 @@
 #include <ctype.h>
 #include <errno.h> // Added for strtonum replacement (strtol)
 
-static char *token;
 
 /*
  * Lexer
@@ -152,8 +151,8 @@ static int astring() {
 int lex(void) {
 again:
     /* Skip Whitespace. */
-    while (*raw == ' ' || *raw == '\t' || *raw == '\n') {
-        if (*raw++ == '\n')
+    while (*raw == ' ' || *raw == '\t' || *raw == '\n' || *raw == '\r') {
+        if (*raw++ == '\n' || *raw == '\r')
             ++line;
     }
 
@@ -186,13 +185,13 @@ again:
             return (*raw);
         case ':':
             if (*++raw != '=')
-                error("unknown token: ':%c'", *raw);
+                error("unknown token??: %c", *raw);
 
             return TOK_ASSIGN;
         case '\0':
             return 0;
         default:
-            error("unknown token: '%c'", *raw);
+            error("unknown token: (%c)[%d]",(char) *raw,(int) *raw);
     }
 
     return 0;

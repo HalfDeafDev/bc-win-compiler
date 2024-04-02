@@ -3,9 +3,7 @@
 }
 
 var x,i,o;
-var y;
 
-y := 0;
 procedure divthree;
   var div, tmp;
 begin

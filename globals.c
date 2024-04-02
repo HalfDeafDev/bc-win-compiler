@@ -1,12 +1,14 @@
 #include "globals.h"
 
 char *raw;
+int type;
 size_t line = 1;
+char *token;
 
 void error(const char *fmt, ...) {
     va_list ap;
     
-    (void) fprintf(stderr, "pl0c: error: %lu: ", line);
+    (void) fprintf(stderr, "error: %lu: ", line);
 
     va_start(ap, fmt);
     (void) vfprintf(stderr, fmt, ap);
@@ -41,6 +43,7 @@ void readin(char *file) {
     if (!!strcmp(strrchr(file, '.'), ".pl0"))
         error("file must end in '.pl0'");
 
+    _set_fmode(_O_BINARY);
     _sopen_s(&fd, file, _O_RDONLY, _SH_DENYNO, _S_IREAD);
 
     if (fd == 1)
@@ -58,8 +61,9 @@ void readin(char *file) {
     if ((raw = malloc(st.st_size + 1)) == NULL)
         error("malloc failed");
 
-    if (_read(fd, raw, st.st_size) != st.st_size)
-        error("couldn't read %s", file);
+    int file_size = _read(fd, raw, st.st_size);
+    if (file_size != st.st_size)
+        error("couldn't read %s, %d != %d", file, file_size, st.st_size);
 
     raw[st.st_size] = '\0';
 

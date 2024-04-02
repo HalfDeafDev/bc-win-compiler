@@ -10,14 +10,22 @@ static void term(void);
 static void factor(void);
 
 static void next(void) {
+#if DEBUG
+    printf("On line: %d\n", line);
+#endif
     type = lex();
     ++raw;
 }
 
 static void expect(int match){
     if (match != type)
-        error("syntax error");
+        error("syntax error\nToken: %s\nExpected Char: %c\nExpected Int: %d\nReceived Char: %c\nReceived Int: %d\n",
+                token, match, match, type, type);
 
+#if DEBUG
+    printf("Expected Char: %c\nReceived Char: %c\n",
+            match, match);
+#endif
     next();
 }
 
@@ -26,9 +34,10 @@ static void expectOr(int count, ...){
     va_start(args, count);
 
     for (int i = 0; i < count; ++i) {
-        if (type == va_arg(args, int))
+        if (type == va_arg(args, int)){
                 next();
                 goto exit;
+        }
     }
 
     error("syntax error");
@@ -58,7 +67,7 @@ void block(void) {
         while (type == TOK_COMMA) {
             expect(TOK_COMMA);
             expect(TOK_IDENT);
-            expect(TOK_EQUALS); 
+            expect(TOK_EQUAL); 
             expectOr(2, TOK_NUMBER, TOK_STRING); 
         }
 
@@ -86,8 +95,6 @@ void block(void) {
    }
 
    statement();
-
-   expect(TOK_DOT);
 }
 
 static void statement(void){
@@ -123,8 +130,6 @@ static void statement(void){
         statement();
         break;
     }
-
-    expect(TOK_END);
 }
 
 static void condition(void) {
@@ -133,17 +138,26 @@ static void condition(void) {
         expression();
     } else {
         expression();
-        expectOr(4, TOK_EQUAL,
-                    TOK_HASH,
-                    TOK_GREATERTHAN,
-                    TOK_LESSTHAN);
+        switch (type) {
+        case TOK_EQUAL:
+        case TOK_HASH:
+        case TOK_GREATERTHAN:
+            next();
+            break;
+        case TOK_LESSTHAN:
+            next();
+            if (type == TOK_GREATERTHAN)
+                next();
+            break;
+        }
         expression();
-        expect(TOK_DOT);
     }
 }
 
 static void expression(void) {
-    expectOr(2, TOK_PLUS, TOK_MINUS);
+    if (type == TOK_PLUS || type == TOK_MINUS) {
+        expectOr(2, TOK_PLUS, TOK_MINUS);
+    }
     term();
     while (type == TOK_PLUS || type == TOK_MINUS) {
         expectOr(2, TOK_PLUS, TOK_MINUS);
@@ -171,6 +185,6 @@ static void factor(void) {
         expect(TOK_LPAREN);
         expression();
         expect(TOK_RPAREN);
-        expect(TOK_DOT);
+        break;
     }
 }

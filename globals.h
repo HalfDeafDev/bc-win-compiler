@@ -9,10 +9,13 @@
 
 #include "TOKENS.h"
 
+#define DEBUG 0
+
 extern char *raw;
 extern size_t line;
    
 extern int type;
+extern char* token;
 
 void error(const char *, ...);
 void readin(char *);
